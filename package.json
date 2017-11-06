@@ -1,0 +1,23 @@
+{
+  "name": "idb-in-worker-perf",
+  "version": "0.0.1",
+  "description": "indexedDB performance in main-thread vs web-worker thread",
+  "author": "rooparam <roopchou@microsoft.com>",
+  "license": "Microsoft Copyright",
+  "private": true,
+  "devDependencies": {
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.1"
+  },
+  "dependencies": {
+    "http-server": "^0.10.0"
+  },
+  "scripts": {
+    "buildMain": "tsc -p ./src/main-thread",
+    "buildWorker": "tsc -p ./src/worker-thread",
+    "build": "yarn run buildWorker && yarn run buildMain",
+    "watchMain": "tsc -w -p ./src/main-thread",
+    "watchWorker": "tsc -w -p ./src/worker-thread",
+    "dev": "start yarn run watchMain && start yarn run watchWorker && yarn run http-server"
+  }
+}
