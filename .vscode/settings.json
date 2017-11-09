@@ -3,7 +3,7 @@
 	"files.exclude": {
 		"yarn.lock": true,
 		"favicon.png": true,
-		"node_modules": true,
-		"dist": true
+		//"node_modules": true,
+		//"dist": true
 	}
 }

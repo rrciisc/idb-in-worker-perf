@@ -15,3 +15,36 @@
 > ..\..\node_modules\.bin\tsc --init
 > ..\..\node_modules\.bin\tslint --init
 ```
+
+## Build Steps
+
+> yarn run build
+> browserify --entry dist\main-thread\thread.js -o dist\main-bundle.js
+> yarn run http-server
+
+## Object Store structure
+
+ObjectStore: ReplyChains
+	id -> 
+	conversationId -> [48:notifications, 41:notifications]
+	parentMessageId -> unix-time
+	latestDeliveryTime -> unix-time
+	messages -> [
+		content:
+		creator: "8:orgid:guid"
+		id: unix-time long random
+		parentMessageId: unix-time long random
+		version:
+	]
+
+index: latestDeliveryTime
+	key: [conversationid, startTimeIndex]
+
+
+
+### Code structure in WebClient
+1. MessageStore.ts (is angular service)
+2. ClientDatabase.ts (registers database factory)
+3. IndexedDbProvider.ts (ts class)
+
+cxn-singapore.ras

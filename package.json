@@ -10,14 +10,17 @@
     "typescript": "^2.6.1"
   },
   "dependencies": {
-    "http-server": "^0.10.0"
+    "http-server": "^0.10.0",
+    "jquery": "^3.2.1",
+    "mocker-data-generator": "^2.5.0"
   },
   "scripts": {
-    "buildMain": "tsc -p ./src/main-thread",
-    "buildWorker": "tsc -p ./src/worker-thread",
+    "buildMain": "tsc --listFiles -p ./src/main-thread",
+    "buildWorker": "tsc --listFiles -p ./src/worker-thread",
     "build": "yarn run buildWorker && yarn run buildMain",
     "watchMain": "tsc -w -p ./src/main-thread",
     "watchWorker": "tsc -w -p ./src/worker-thread",
-    "dev": "start yarn run watchMain && start yarn run watchWorker && yarn run http-server"
+    "dev": "start yarn run watchMain && start yarn run watchWorker && yarn run http-server",
+    "serve": "yarn run build && browserify --entry dist\\main-thread\\thread.js -o dist\\main-bundle.js && yarn run http-server"
   }
 }
