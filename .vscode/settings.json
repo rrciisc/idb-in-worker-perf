@@ -4,6 +4,6 @@
 		"yarn.lock": true,
 		"favicon.png": true,
 		//"node_modules": true,
-		//"dist": true
+		"dist": true
 	}
 }
