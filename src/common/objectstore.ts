@@ -56,10 +56,7 @@ export class ObjectStore<T> implements IObjectStore<T> {
 	 * @param limit? max number of records to fetch if specified
 	 */
 	public getRange(indexName: string, low: string | string[], high: string | string[], limit?: number): Promise<T[]> {
-		// TODO: implementation pending
-		return new Promise<T[]>((resolve, reject) => {
-			resolve([]);
-		});
+		return Promise.reject("Method not implemented");
 	}
 
 	/**
