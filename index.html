@@ -13,9 +13,23 @@
 	<input id="updateDataButton" type="button" value="Update ReplyChains" disabled />
 	<input id="getDataButton" type="button" value="Get ReplyChains" disabled />
 	<input id="cleanDataButton" type="button" value="Delete Data" disabled />
-	| <input id="scenarioButton" type="button" value="Perform Scenario" disabled />
+	| <input id="basicScenarioButton" type="button" value="Sequential Scenario" disabled />
+	<input id="scenarioButton" type="button" value="Full Scenario" disabled />
+	| <select id="storeSelector">
+		<option value="main" selected>Main Thread</option>
+		<option value="worker">Worker Thread</option>
+	</select>
+	| Batch Size: <select id="batchSizeSelector">
+		<option value="10">10</option>
+		<option value="50">50</option>
+		<option value="100">100</option>
+		<option value="500">500</option>
+		<option value="1000" selected>1K</option>
+		<option value="5000">5K</option>
+		<option value="10000">10K</option>
+	</select>
 	<br /><br />
-	<textarea id="logTA" rows="20" cols="100" disabled placeholder="output logs"></textarea>
+	<textarea id="logTA" rows="20" cols="120" disabled placeholder="output logs" style="resize: vertical;"></textarea>
 	<br /><input type="button" value="Clear logs" onclick="document.getElementById('logTA').value = '';" />
 	<script src="dist/main-bundle.js"></script>
 </body>

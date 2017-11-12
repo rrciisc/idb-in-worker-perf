@@ -4,13 +4,13 @@ import { SchemaDefinition } from "../common/schema";
 import { Storage } from "../common/storage";
 import { IStorageWrapper } from "../common/storage-wrapper";
 
-export class MainStorage implements IStorageWrapper<IReplyChain> {
+export class ThreadStorage implements IStorageWrapper<IReplyChain> {
 	private objectStore: IObjectStore<IReplyChain>;
 	private storeReady = false;
 
-	constructor() {
+	constructor(dbName: string) {
 		const schema = new SchemaDefinition();
-		const storage = new Storage("Main", schema);
+		const storage = new Storage(dbName, schema);
 		storage.getObjectStore(schema.stores.replychains.name).then((store) => {
 			this.objectStore = store;
 			this.storeReady = true;

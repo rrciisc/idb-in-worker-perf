@@ -1,23 +1,29 @@
 import { IReplyChain } from "../common/replychain";
-import { MainStorage } from "./main-storage";
+import { IStorageWrapper } from "../common/storage-wrapper";
+import { ThreadStorage } from "../common/thread-storage";
 import { generateMockChains } from "./mock-data";
+import { WorkerStorage } from "./worker-storage";
 
-const store = new MainStorage();
+const mainThreadStore = new ThreadStorage("Main");
+const workerThreadStore = new WorkerStorage();
+let store: IStorageWrapper<IReplyChain> = mainThreadStore;
 let indexId = 1;
-const BATCH_SIZE = 1000;
+let BATCH_SIZE = 1000;
 const GET_PERCENTAGE = 25;
+let scenarioCounter = 0;
 
 const buttonsList = [
 	"cleanDataButton",
 	"insertDataButton",
 	"updateDataButton",
 	"getDataButton",
+	"basicScenarioButton",
 	"scenarioButton",
 ];
 const logElement = document.getElementById("logTA") as HTMLTextAreaElement;
 
 setTimeout(function checkStoreState() {
-	if (store.isStoreReady) {
+	if (mainThreadStore.isStoreReady && workerThreadStore.isStoreReady) {
 		buttonsList.forEach((buttonId) => {
 			const btn = document.getElementById(buttonId) as HTMLButtonElement;
 			btn.disabled = false;
@@ -27,6 +33,28 @@ setTimeout(function checkStoreState() {
 		setTimeout(checkStoreState, 100);
 	}
 }, 100);
+
+(document.getElementById("storeSelector") as HTMLSelectElement).addEventListener("change", (e) => {
+	const select = document.getElementById("storeSelector") as HTMLSelectElement;
+	const value = select.options[select.selectedIndex].value;
+	switch (value) {
+		case "main":
+			store = mainThreadStore;
+			logElement.value += `** Now using main-thread storage **\n`;
+			break;
+		case "worker":
+			store = workerThreadStore;
+			logElement.value += `** Now using worker-thread storage **\n`;
+			break;
+	}
+});
+
+(document.getElementById("batchSizeSelector") as HTMLSelectElement).addEventListener("change", (e) => {
+	const select = document.getElementById("batchSizeSelector") as HTMLSelectElement;
+	const value = select.options[select.selectedIndex].value;
+	BATCH_SIZE = +value;
+	logElement.value += `* Batch Size changed to: ${BATCH_SIZE} *\n`;
+});
 
 const toggleButtonsState = () => {
 	buttonsList.forEach((buttonId) => {
@@ -42,6 +70,7 @@ const instrumentedButtonAction = (action: string,
 	const tStart = performance.now();
 	return func().then((response) => {
 		const tEnd = performance.now();
+		scenarioCounter += tEnd - tStart;
 		logElement.value += `action: '${action}' ; time: ${(tEnd - tStart).toFixed(2)} msec.\n`;
 		toggleButtonsState();
 		return response;
@@ -99,9 +128,33 @@ const getDataButtonClickHandler = (e: MouseEvent): Promise<void | IReplyChain[]>
 (document.getElementById("updateDataButton") as HTMLButtonElement).addEventListener("click", updateButtonClickHandler);
 (document.getElementById("getDataButton") as HTMLButtonElement).addEventListener("click", getDataButtonClickHandler);
 
-(document.getElementById("scenarioButton") as HTMLButtonElement).addEventListener("click", (e) => {
-	logElement.value += `* Scenario Start\n`;
+(document.getElementById("basicScenarioButton") as HTMLButtonElement).addEventListener("click", (e) => {
+	logElement.value += `\n* Basic Scenario Start\n`;
 	const t1 = performance.now();
+	scenarioCounter = 0;
+	cleanButtonClickHandler(e).then(() => {
+		insertButtonClickHandler(e).then(() => {
+			updateButtonClickHandler(e).then(() => {
+				getDataButtonClickHandler(e).then(() => {
+					insertButtonClickHandler(e).then(() => {
+						updateButtonClickHandler(e).then(() => {
+							getDataButtonClickHandler(e).then(() => {
+								const t2 = performance.now();
+								logElement.value += `* Basic Sceanrio End TOTAL(${scenarioCounter.toFixed(2)} msec)\n\n`;
+								logElement.value += `** Total Scenario Execution time: ${(t2 - t1).toFixed(2)} msec.\n\n`;
+							});
+						});
+					});
+				});
+			});
+		});
+	});
+});
+
+(document.getElementById("scenarioButton") as HTMLButtonElement).addEventListener("click", (e) => {
+	logElement.value += `\n* Full Scenario Start\n`;
+	const t1 = performance.now();
+	scenarioCounter = 0;
 	cleanButtonClickHandler(e).then(() => {
 		insertButtonClickHandler(e).then(() => {
 			updateButtonClickHandler(e).then(() => {
@@ -122,8 +175,8 @@ const getDataButtonClickHandler = (e: MouseEvent): Promise<void | IReplyChain[]>
 										getDataButtonClickHandler(e),
 									]).then(() => {
 										const t2 = performance.now();
-										logElement.value += `* Sceanrio End\n`;
-										logElement.value += `** Total Scenario Execution time: ${(t2 - t1).toFixed(2)} msec.\n`;
+										logElement.value += `* Full Sceanrio End TOTAL(${scenarioCounter.toFixed(2)} msec)\n\n`;
+										logElement.value += `** Total Scenario Execution time: ${(t2 - t1).toFixed(2)} msec.\n\n`;
 									});
 								});
 							});
