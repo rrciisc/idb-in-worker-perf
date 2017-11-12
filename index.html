@@ -8,8 +8,15 @@
 	<title>IndexedDB Performance</title>
 </head>
 <body>
-	<h1>Hello World!</h1>
-	<input type="button" value="Generate" />
+	<h1>IndexedDB Performance in Main thread and Web worker</h1>
+	<input id="insertDataButton" type="button" value="Create ReplyChains" disabled />
+	<input id="updateDataButton" type="button" value="Update ReplyChains" disabled />
+	<input id="getDataButton" type="button" value="Get ReplyChains" disabled />
+	<input id="cleanDataButton" type="button" value="Delete Data" disabled />
+	| <input id="scenarioButton" type="button" value="Perform Scenario" disabled />
+	<br /><br />
+	<textarea id="logTA" rows="20" cols="100" disabled placeholder="output logs"></textarea>
+	<br /><input type="button" value="Clear logs" onclick="document.getElementById('logTA').value = '';" />
 	<script src="dist/main-bundle.js"></script>
 </body>
 </html>

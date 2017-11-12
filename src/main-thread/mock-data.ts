@@ -33,13 +33,20 @@ const replyChainSchema = {
 	}
 };
 
-export function generateMockChains(size: number): Promise<IReplyChain[]> {
+export function generateMockChains(size: number, index?: number): Promise<IReplyChain[]> {
 	return new Promise<IReplyChain[]>((resolve, reject) => {
+		const currentId = replyChainSchema.id.incrementalId;
+		if (index) {
+			replyChainSchema.id.incrementalId = index;
+		}
 		mocker()
 		.schema("messages", messageSchema, 100)
 		.schema("replychains", replyChainSchema, size)
 		.build()
 		.then((data) => {
+			if (index) {
+				replyChainSchema.id.incrementalId = currentId;
+			}
 			resolve(data.replychains as IReplyChain[]);
 		});
 	});

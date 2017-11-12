@@ -1,7 +1,8 @@
 export interface IObjectStore<T> {
-	get(key: string): Promise<T>;
-	getMultiple(keys: string[]): Promise<T[]>;
+	get(key: number): Promise<T>;
+	getMultiple(keys: number[]): Promise<T[]>;
 	getRange(indexName: string, low: string | string[], high: string | string[], limit?: number): Promise<T[]>;
+	add(items: T[]): Promise<void>;
 	put(items: T[]): Promise<void>;
 	clear(): Promise<void>;
 }
@@ -17,7 +18,7 @@ export class ObjectStore<T> implements IObjectStore<T> {
 	 * Get a single object from store
 	 * @param key primary key of object
 	 */
-	public get(key: string): Promise<T> {
+	public get(key: number): Promise<T> {
 		return new Promise<T>((resolve, reject) => {
 			let result: T | null = null;
 			const txn = this.getTransaction((e) => resolve(result as T), (e) => reject(e));
@@ -29,7 +30,7 @@ export class ObjectStore<T> implements IObjectStore<T> {
 	 * Get multiple objects from store
 	 * @param keys collection of primery keys
 	 */
-	public getMultiple(keys: string[]): Promise<T[]> {
+	public getMultiple(keys: number[]): Promise<T[]> {
 		return new Promise<T[]>((resolve, reject) => {
 			const resultArray = new Array<T>();
 			const txn = this.getTransaction((e) => resolve(resultArray), (e) => reject(e));
@@ -58,6 +59,18 @@ export class ObjectStore<T> implements IObjectStore<T> {
 		// TODO: implementation pending
 		return new Promise<T[]>((resolve, reject) => {
 			resolve([]);
+		});
+	}
+
+	/**
+	 * add objects in store
+	 * @param items objects which we want to store
+	 */
+	public add(items: T[]): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			const txn = this.getTransaction((e) => resolve(), (e) => reject(e), /* isWriteMode */ true);
+			const store = this.getObjectStore(txn);
+			items.forEach((item) => store.add(item));
 		});
 	}
 
@@ -91,8 +104,8 @@ export class ObjectStore<T> implements IObjectStore<T> {
                         abortHandler: (e: Event) => void,
                         isWriteMode?: boolean): IDBTransaction {
 		const txn = this.db.transaction([this.storeName], isWriteMode ? "readwrite" : "readonly");
-		txn.oncomplete = (e) => completeHandler;
-		txn.onabort = (e) => abortHandler;
+		txn.oncomplete = (e) => completeHandler(e);
+		txn.onabort = (e) => abortHandler(e);
 		return txn;
 	}
 }
