@@ -49,11 +49,34 @@ setTimeout(function checkStoreState() {
 	}
 });
 
+let mockChains: IReplyChain[] = [];
+let randomKeys: number[] = [];
+const genData = () => {
+	mockChains = [];
+	randomKeys = [];
+	const keysNeeded = BATCH_SIZE * GET_PERCENTAGE / 100;
+	logElement.value += `Generating Mock Keys\n`;
+	while (randomKeys.length < keysNeeded) {
+		const randNum = Math.ceil(Math.random() * BATCH_SIZE);
+		if (randomKeys.indexOf(randNum) === -1) {
+			randomKeys.push(randNum);
+		}
+	}
+	logElement.value += `Mock Keys ready\n`;
+
+	generateMockChains(BATCH_SIZE).then((chains) => {
+		mockChains = chains;
+		logElement.value += `Mock chains ready\n`;
+	});
+};
+genData();
+
 (document.getElementById("batchSizeSelector") as HTMLSelectElement).addEventListener("change", (e) => {
 	const select = document.getElementById("batchSizeSelector") as HTMLSelectElement;
 	const value = select.options[select.selectedIndex].value;
 	BATCH_SIZE = +value;
 	logElement.value += `* Batch Size changed to: ${BATCH_SIZE} *\n`;
+	genData();
 });
 
 const toggleButtonsState = () => {
@@ -87,39 +110,39 @@ const cleanButtonClickHandler = (e: MouseEvent): Promise<void | IReplyChain[]> =
 
 const insertButtonClickHandler = (e: MouseEvent): Promise<void | IReplyChain[]> => {
 	return new Promise<void>((resolve, reject) => {
-		generateMockChains(BATCH_SIZE, indexId).then((chains) => {
-			indexId += BATCH_SIZE;
-			(document.getElementById("getDataButton") as HTMLButtonElement).disabled = false;
-			return instrumentedButtonAction("Insert Data", (): Promise<void> => {
-				return store.add(chains);
-			}).then(() => resolve());
-		});
+		// generateMockChains(BATCH_SIZE, indexId).then((chains) => {
+		// 	indexId += BATCH_SIZE;
+		(document.getElementById("getDataButton") as HTMLButtonElement).disabled = false;
+		return instrumentedButtonAction("Insert Data", (): Promise<void> => {
+			return store.put(mockChains);
+		}).then(() => resolve());
+		// });
 	});
 };
 
 const updateButtonClickHandler = (e: MouseEvent): Promise<void | IReplyChain[]> => {
 	return new Promise<void>((resolve, reject) => {
-		generateMockChains(BATCH_SIZE).then((chains) => {
-			(document.getElementById("getDataButton") as HTMLButtonElement).disabled = false;
-			instrumentedButtonAction("Update Data", (): Promise<void> => {
-				return store.put(chains);
-			}).then(() => resolve());
-		});
+		// generateMockChains(BATCH_SIZE).then((chains) => {
+		// 	(document.getElementById("getDataButton") as HTMLButtonElement).disabled = false;
+		instrumentedButtonAction("Update Data", (): Promise<void> => {
+			return store.put(mockChains);
+		}).then(() => resolve());
+		// });
 	});
 };
 
 const getDataButtonClickHandler = (e: MouseEvent): Promise<void | IReplyChain[]> => {
-	const keysNeeded = BATCH_SIZE * GET_PERCENTAGE / 100;
-	const keys: number[] = [];
-	while (keys.length < keysNeeded) {
-		const randNum = Math.ceil(Math.random() * indexId);
-		if (keys.indexOf(randNum) === -1) {
-			keys.push(randNum);
-		}
-	}
+	// const keysNeeded = BATCH_SIZE * GET_PERCENTAGE / 100;
+	// const keys: number[] = [];
+	// while (keys.length < keysNeeded) {
+	// 	const randNum = Math.ceil(Math.random() * indexId);
+	// 	if (keys.indexOf(randNum) === -1) {
+	// 		keys.push(randNum);
+	// 	}
+	// }
 
 	return instrumentedButtonAction("Get Data", (): Promise<IReplyChain[]> => {
-		return store.getMultiple(keys);
+		return store.getMultiple(randomKeys);
 	});
 };
 
