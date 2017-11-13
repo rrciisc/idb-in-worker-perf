@@ -6,6 +6,7 @@
   "license": "Microsoft Copyright",
   "private": true,
   "devDependencies": {
+    "@types/spin.js": "^2.3.1",
     "tsify": "^3.0.3",
     "tslint": "^5.8.0",
     "typescript": "^2.6.1"
@@ -13,7 +14,8 @@
   "dependencies": {
     "http-server": "^0.10.0",
     "jquery": "^3.2.1",
-    "mocker-data-generator": "^2.5.0"
+    "mocker-data-generator": "^2.5.0",
+    "spin.js": "^3.0.0"
   },
   "scripts": {
     "buildMain": "browserify src\\main-thread\\thread.ts -p [tsify -p src\\main-thread] --debug -o dist\\main-bundle.js",

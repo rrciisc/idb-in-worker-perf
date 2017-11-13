@@ -47,4 +47,12 @@ index: latestDeliveryTime
 2. ClientDatabase.ts (registers database factory)
 3. IndexedDbProvider.ts (ts class)
 
-cxn-singapore.ras
+Probable Execution Plan
+-----------------------
+1. IndexedDB provider to worker
+2. long poll to same worker
+3. Northstar -> move everything to worker (except UI/react interaction code)
+ [best part: if we think too much code on worker; worker not able to breathe; spawn one more; Use long-test english strategy divide-and-conquer/rule]
+
+
+ -t [babelify --extensions ['.ts', '.js']]

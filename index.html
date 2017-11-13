@@ -8,7 +8,7 @@
 	<title>IndexedDB Performance</title>
 </head>
 <body>
-	<h1>IndexedDB Performance in Main thread and Web worker</h1>
+	<h1>IndexedDB Performance Characteristics</h1><div id="spinner"></div>
 	<input id="insertDataButton" type="button" value="Create ReplyChains" disabled />
 	<input id="updateDataButton" type="button" value="Update ReplyChains" disabled />
 	<input id="getDataButton" type="button" value="Get ReplyChains" disabled />
@@ -29,8 +29,14 @@
 		<option value="10000">10K</option>
 	</select>
 	<br /><br />
-	<textarea id="logTA" rows="20" cols="120" disabled placeholder="output logs" style="resize: vertical;"></textarea>
+	<textarea id="logTA" rows="30" cols="120" disabled placeholder="output logs" style="resize: vertical;"></textarea>
 	<br /><input type="button" value="Clear logs" onclick="document.getElementById('logTA').value = '';" />
 	<script src="dist/main-bundle.js"></script>
+	<script type="module" src="node_modules/spin.js/spin.js"></script>
+	<script type="module">
+		import { Spinner } from "./node_modules/spin.js/spin.js";
+		var sEl = document.getElementById("spinner");
+		var sp = new Spinner({color: "#000", lines: 12}).spin(sEl);
+	</script>
 </body>
 </html>
